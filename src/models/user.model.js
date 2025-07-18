@@ -52,14 +52,15 @@ const userSchema = new Schema(
     }
 )
 
-userSchema.pre("save", async function(next) {
-    if(this.isModified("password")) return next();
+userSchema.pre("save", async function(next) {  // if we write here next ,then we call next in last. 
+    if(!this.isModified("password")) return next();
+     
     this.password = bycrpt.hash(this.password, 10)
     next()                      
 })
 
 userSchema.methods.isPasswordCorrect = async function(password){
-    
+    return await bycrpt.compare(password, this.password)
 }
 
 export const User = mongoose.model("User" ,userSchema)
